@@ -20,7 +20,7 @@ public class GetData {
 
             if (!procession()) break;
         }
-
+        dataOperations.closeSessionFactory();
     }
 
     private static boolean procession() {
@@ -56,7 +56,7 @@ public class GetData {
 
     }
 
-    public static Note createNote() {
+    private static Note createNote() {
         Note note = new Note();
         Scanner scanner = new Scanner(System.in);
 
@@ -71,25 +71,38 @@ public class GetData {
         return note;
     }
 
-    public static void checkAllNotes(DataOperations dataOperations) {
+    private static void checkAllNotes(DataOperations dataOperations) {
         for (Note note : dataOperations.getNotes()) {
             System.out.printf("%s - %d\n", note.getTitle(), note.getId());
         }
     }
 
-    public static void deleteNote(DataOperations dataOperations) {
+    private static void deleteNote(DataOperations dataOperations) {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter note id: ");
-        dataOperations.deleteNote(scanner.nextInt());
+
+        int id = scanner.nextInt();
+        if (!dataOperations.deleteNote(id)) {
+            System.out.printf("Note with %d id not found\n", id);
+        } else {
+            System.out.println("Note deleted");
+        }
+
     }
 
-    public static void readNote(DataOperations dataOperations) {
+    private static void readNote(DataOperations dataOperations) {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter note id: ");
-        Note note = dataOperations.getNote(scanner.nextInt());
-        System.out.printf("%d - %s - %s\n%s\n", note.getId(), note.getTitle(), note.getDate(), note.getQuery());
+        int id = scanner.nextInt();
+        Note note = dataOperations.getNote(id);
+
+        try {
+            System.out.printf("%d - %s - %s\n%s\n", note.getId(), note.getTitle(), note.getDate(), note.getQuery());
+        } catch (NullPointerException ignored) {
+            System.out.printf("Note with %d id not found\n", id);
+        }
     }
 
 }
